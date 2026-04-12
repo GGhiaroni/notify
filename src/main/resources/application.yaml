@@ -1,3 +1,15 @@
 spring:
   application:
     name: Notify
+
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/notification_db
+    redis:
+      host: localhost
+      port: 6379
+
+  api:
+    security:
+      token:
+        secret: ${JWT_SECRET}
