@@ -13,3 +13,9 @@ api:
   security:
     token:
       secret: ${JWT_SECRET}
+
+  external:
+    mailtrap:
+      url: https://sandbox.api.mailtrap.io
+      token: ${MAILTRAP_TOKEN}
+      inbox-id: 4556749
