@@ -19,3 +19,9 @@ api:
       url: https://sandbox.api.mailtrap.io
       token: ${MAILTRAP_TOKEN}
       inbox-id: 4556749
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
