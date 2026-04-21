@@ -4,6 +4,7 @@ import com.GabrielTiziano.Notify.client.MailtrapClient;
 import com.GabrielTiziano.Notify.dto.MailtrapRequestDTO;
 import com.GabrielTiziano.Notify.dto.NotificationRequestDTO;
 import com.GabrielTiziano.Notify.dto.NotificationResponseDTO;
+import com.GabrielTiziano.Notify.exception.ResourceNotFoundException;
 import com.GabrielTiziano.Notify.mapper.MailtrapMapper;
 import com.GabrielTiziano.Notify.mapper.NotificationMapper;
 import com.GabrielTiziano.Notify.model.NotificationModel;
@@ -14,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -53,5 +56,23 @@ public class NotificationService {
         String headerAuthorization = "Bearer " + mailtrapToken;
 
         mailtrapClient.sendEmail(headerAuthorization, inboxId, mailtrapRequestDTO);
+    }
+
+    public NotificationResponseDTO getNotificationById(String id){
+        NotificationModel model = notificationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Notificação com ID " + id + " não foi encontrada."));
+
+        return NotificationMapper.toNotificationResponseDTO(model);
+    }
+
+    public List<NotificationResponseDTO> getMyNotifications() {
+        JWTUserData userPrincipal = (JWTUserData) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String currentClientId = userPrincipal.id();
+
+        List<NotificationModel> notifications = notificationRepository.findAllByClientId(currentClientId);
+
+        return notifications.stream()
+                .map(NotificationMapper::toNotificationResponseDTO)
+                .toList();
     }
 }

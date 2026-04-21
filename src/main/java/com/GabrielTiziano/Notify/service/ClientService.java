@@ -3,6 +3,7 @@ package com.GabrielTiziano.Notify.service;
 import com.GabrielTiziano.Notify.dto.ClientLoginRequestDTO;
 import com.GabrielTiziano.Notify.dto.ClientRegisterRequestDTO;
 import com.GabrielTiziano.Notify.dto.ClientResponseDTO;
+import com.GabrielTiziano.Notify.exception.BusinessRuleException;
 import com.GabrielTiziano.Notify.mapper.ClientAppMapper;
 import com.GabrielTiziano.Notify.model.ClientAppModel;
 import com.GabrielTiziano.Notify.repository.ClientAppRepository;
@@ -18,7 +19,7 @@ public class ClientService {
 
     public ClientResponseDTO register(ClientRegisterRequestDTO clientRegisterRequestDTO) {
         if (clientAppRepository.findUserByEmail(clientRegisterRequestDTO.email()).isPresent()) {
-            throw new RuntimeException("Esse e-mail já está cadastrado na aplicação.");
+            throw new BusinessRuleException("Este e-mail já está cadastrado no sistema.");
         }
 
         ClientAppModel model = ClientAppMapper.toModel(clientRegisterRequestDTO);
