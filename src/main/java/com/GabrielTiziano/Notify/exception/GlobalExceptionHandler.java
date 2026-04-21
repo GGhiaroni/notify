@@ -42,6 +42,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<StandardError> globalException(Exception e, HttpServletRequest request){
+        e.printStackTrace();
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 
         StandardError error = new StandardError(
