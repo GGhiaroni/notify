@@ -54,6 +54,8 @@ public class TokenService {
                     .build());
 
         } catch (RuntimeException e) {
+            System.out.println("ERRO NA VALIDAÇÃO DO TOKEN:");
+            e.printStackTrace();
             return Optional.empty();
         }
 
