@@ -1,18 +1,16 @@
 package com.GabrielTiziano.Notify.service;
 
-import com.GabrielTiziano.Notify.client.MailtrapClient;
-import com.GabrielTiziano.Notify.dto.MailtrapRequestDTO;
 import com.GabrielTiziano.Notify.dto.NotificationRequestDTO;
 import com.GabrielTiziano.Notify.dto.NotificationResponseDTO;
 import com.GabrielTiziano.Notify.exception.ResourceNotFoundException;
-import com.GabrielTiziano.Notify.mapper.MailtrapMapper;
 import com.GabrielTiziano.Notify.mapper.NotificationMapper;
 import com.GabrielTiziano.Notify.model.NotificationModel;
 import com.GabrielTiziano.Notify.model.enums.NotificationStatus;
 import com.GabrielTiziano.Notify.repository.NotificationRepository;
 import com.GabrielTiziano.Notify.security.JWTUserData;
+import com.GabrielTiziano.Notify.strategy.NotificationStrategy;
+import com.GabrielTiziano.Notify.strategy.NotificationStrategyFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -22,14 +20,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NotificationService {
 
-    @Value("${api.external.mailtrap.token}")
-    private String mailtrapToken;
-
-    @Value("${api.external.mailtrap.inbox-id}")
-    private String inboxId;
-
     private final NotificationRepository notificationRepository;
-    private final MailtrapClient mailtrapClient;
+    private final NotificationStrategyFactory notificationStrategyFactory;
 
     public NotificationResponseDTO sendNotification(NotificationRequestDTO notificationRequestDTO){
         JWTUserData userPrincipal = (JWTUserData)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -41,21 +33,14 @@ public class NotificationService {
         notificationModel = notificationRepository.save(notificationModel);
 
         try {
-            sendEmailThroughMailTrap(notificationModel);
+            NotificationStrategy strategy = notificationStrategyFactory.getStrategy(notificationRequestDTO.channel());
+            strategy.send(notificationModel);
             notificationModel.setStatus(NotificationStatus.SENT);
         } catch (Exception e) {
             notificationModel.setStatus(NotificationStatus.FAILED);
         }
 
         return NotificationMapper.toNotificationResponseDTO(notificationRepository.save(notificationModel));
-    }
-
-    private void sendEmailThroughMailTrap(NotificationModel notificationModel){
-        MailtrapRequestDTO mailtrapRequestDTO = MailtrapMapper.toMailtrapRequestDTO(notificationModel);
-
-        String headerAuthorization = "Bearer " + mailtrapToken;
-
-        mailtrapClient.sendEmail(headerAuthorization, inboxId, mailtrapRequestDTO);
     }
 
     public NotificationResponseDTO getNotificationById(String id){
