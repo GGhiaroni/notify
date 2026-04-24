@@ -17,12 +17,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/notify/notifications")
 @RequiredArgsConstructor
-@Tag(name = "Notificações", description = "Endpoints para envio, listagem e consulta de notificações via Mailtrap. Requer Token JWT.")
+@Tag(name = "Notificações", description = "Endpoints para envio, listagem e consulta de notificações via Mailtrap, Twilio SMS e WhatsApp. Requer Token JWT.")
 public class NotificationController {
     private final NotificationService notificationService;
 
     @PostMapping("/send")
-    @Operation(summary = "Envia uma nova notificação", description = "Dispara um e-mail através do provedor Mailtrap e salva o registro no banco de dados MongoDB vinculado ao cliente autenticado.")
+    @Operation(summary = "Envia uma nova notificação", description = "Dispara um e-mail através do provedor Mailtrap, ou um SMS/WhatsApp via provedor Twilio e salva o registro no banco de dados MongoDB vinculado ao cliente autenticado.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Notificação processada e enviada com sucesso (ou marcada como FAILED caso o provedor falhe)"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos no payload da requisição"),
