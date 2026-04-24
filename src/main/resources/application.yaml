@@ -19,6 +19,10 @@ api:
       url: https://sandbox.api.mailtrap.io
       token: ${MAILTRAP_TOKEN}
       inbox-id: ${MAILTRAP_INBOX_ID}
+    twilio:
+      account-sid: ${TWILIO_ACCOUNT_SID}
+      auth-token: ${TWILIO_AUTH_TOKEN}
+      phone-number: ${TWILIO_PHONE_NUMBER}
 
 springdoc:
   swagger-ui:
